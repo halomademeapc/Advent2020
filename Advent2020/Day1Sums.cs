@@ -35,11 +35,9 @@ namespace Advent2020
         /// <param name="numberPerSet">Number of elements to put in each set</param>
         private static IEnumerable<IEnumerable<TCollection>> GetPairings<TCollection>(IEnumerable<TCollection> collection, int numberPerSet)
         {
-            IEnumerable<IEnumerable<TCollection>> result = collection.Select(o => new List<TCollection> { o });
+            IEnumerable<IEnumerable<TCollection>> result = collection.Select(Extensions.ToSingleElementSequence);
             foreach (var _ in Enumerable.Range(0, numberPerSet - 1))
-            {
-                result = result.SelectMany(r => collection.Select(o => r.Concat(new List<TCollection> { o })));
-            }
+                result = result.SelectMany(r => collection.Select(o => r.Append(o)));
             return result;
         }
 
