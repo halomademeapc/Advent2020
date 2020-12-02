@@ -5,32 +5,36 @@ using System.Text.RegularExpressions;
 
 namespace Advent2020
 {
-    public class Day2_PasswordAudit : IPuzzleResult
+    [Obsolete]
+    public class Day02_LegacyPasswordAudit : IPuzzleResult
     {
         private readonly IEnumerable<PasswordEvaluation> Passwords;
 
-        public Day2_PasswordAudit()
+        public Day02_LegacyPasswordAudit()
         {
             Passwords = Resources.Day2Values.Split(Environment.NewLine).Select(row => new PasswordEvaluation(row));
         }
 
         public object GetResult() => Passwords.Count(pass => pass.IsValid());
 
+        /// <summary>
+        /// A password with minimum instances of a specific character
+        /// </summary>
+        /// <remarks>Based on incorrect requirement logic</remarks>
         public struct PasswordEvaluation
         {
             public char RequiredCharacter;
-            public (int, int) Indexes;
+            public int MinimumOccurrences;
+            public int MaximumOccurrences;
             public string Password;
 
-            public bool IsValid() => IndexesAreValid() && CharPositionsAreValid();
+            public bool IsValid()
+            {
+                var requiredChar = RequiredCharacter;
+                var occurrences = Password.Count(@char => @char == requiredChar);
+                return occurrences <= MaximumOccurrences && occurrences >= MinimumOccurrences;
+            }
 
-            private bool IndexesAreValid() => Password.Length >= Indexes.Item1 && Password.Length >= Indexes.Item2;
-
-            private bool CharPositionsAreValid() => Password[Indexes.Item1] == RequiredCharacter ^ Password[Indexes.Item2] == RequiredCharacter;
-
-            /// <summary>
-            /// A password where exactly one instance of a specified character must exist in range
-            /// </summary>
             public PasswordEvaluation(string serialized)
             {
                 var serializationFormat = new Regex(@"^(\d+)-(\d+)\ (\w):\ (.+)$");
@@ -38,8 +42,8 @@ namespace Advent2020
                 if (!match.Success)
                     throw new ArgumentException($"Unable to parse {serialized}");
 
-                //provided indexes start at 1, not 0
-                Indexes = (int.Parse(match.Groups[1].Value) - 1, int.Parse(match.Groups[2].Value) - 1);
+                MinimumOccurrences = int.Parse(match.Groups[1].Value);
+                MaximumOccurrences = int.Parse(match.Groups[2].Value);
                 RequiredCharacter = match.Groups[3].Value[0];
                 Password = match.Groups[4].Value;
             }

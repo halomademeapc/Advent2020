@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Advent2020
 {
-    public class Day1_Sums2 : IPuzzleResult
+    public class Day01_Sums2 : IPuzzleResult
     {
         protected readonly IEnumerable<int> SampleValues;
 
-        public Day1_Sums2()
+        public Day01_Sums2()
         {
             SampleValues = Resources.Day1Values.Split(Environment.NewLine).Select(int.Parse);
         }
