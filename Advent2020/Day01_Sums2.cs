@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Advent2020
 {
-    public class Day01_Sums2 : IPuzzleResult<int>
+    public class Day01_Sums2 : IPuzzleResult<long>
     {
         protected readonly IEnumerable<int> SampleValues;
 
@@ -20,11 +20,11 @@ namespace Advent2020
         /// <param name="options">Data set to run against</param>
         /// <param name="sum">Sum to look for</param>
         /// <returns>Product of components</returns>
-        public static int GetProduct(IEnumerable<int> options, int sum, int numberPerSet)
+        public static long GetProduct(IEnumerable<int> options, int sum, int numberPerSet)
         {
             var pairs = GetPairings(options, numberPerSet);
             var match = pairs.First(p => p.Sum() == sum);
-            return match.Aggregate((accumulate, source) => accumulate * source);
+            return match.Product();
         }
 
         /// <summary>
@@ -41,6 +41,6 @@ namespace Advent2020
             return result;
         }
 
-        public virtual int GetResult() => GetProduct(SampleValues, 2020, 2);
+        public virtual long GetResult() => GetProduct(SampleValues, 2020, 2);
     }
 }
