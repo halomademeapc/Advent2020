@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace Advent2020
 {
     [Obsolete]
-    public class Day02_LegacyPasswordAudit : IPuzzleResult
+    public class Day02_LegacyPasswordAudit : IPuzzleResult<int>
     {
         private readonly IEnumerable<PasswordEvaluation> Passwords;
 
@@ -15,7 +15,7 @@ namespace Advent2020
             Passwords = Resources.Day2Values.Split(Environment.NewLine).Select(row => new PasswordEvaluation(row));
         }
 
-        public object GetResult() => Passwords.Count(pass => pass.IsValid());
+        public int GetResult() => Passwords.Count(pass => pass.IsValid());
 
         /// <summary>
         /// A password with minimum instances of a specific character

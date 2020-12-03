@@ -12,13 +12,13 @@ namespace Advent2020
                 .GetTypes()
                 .Where(t => t.IsClass)
                 .Where(t => !t.IsAbstract)
-                .Where(t => typeof(IPuzzleResult).IsAssignableFrom(t));
+                .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPuzzleResult<>)));
 
             foreach (var t in types)
             {
                 try
                 {
-                    var instance = Activator.CreateInstance(t) as IPuzzleResult;
+                    dynamic instance = Activator.CreateInstance(t);
                     var result = instance.GetResult();
                     Console.WriteLine($"{t.Name} result: {result}");
                 }

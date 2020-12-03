@@ -1,8 +1,7 @@
 ﻿namespace Advent2020
 {
-    interface IPuzzleResult
+    interface IPuzzleResult<TResult>
     {
-        // not bothering with generics for this
-        public object GetResult();
+        public TResult GetResult();
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Advent2020
 {
-    public class Day01_Sums2 : IPuzzleResult
+    public class Day01_Sums2 : IPuzzleResult<int>
     {
         protected readonly IEnumerable<int> SampleValues;
 
@@ -41,6 +41,6 @@ namespace Advent2020
             return result;
         }
 
-        public virtual object GetResult() => GetProduct(SampleValues, 2020, 2);
+        public virtual int GetResult() => GetProduct(SampleValues, 2020, 2);
     }
 }
