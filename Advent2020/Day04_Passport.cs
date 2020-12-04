@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Advent2020
 {
-    public class Day04_Passport : IPuzzleResult<int>
+    public class Day04_Passport : IPuzzleResult<string>
     {
         private readonly IEnumerable<Passport> passports;
 
@@ -23,7 +24,8 @@ namespace Advent2020
                 }) // parse out key:value format
                 .ToDictionary(p => p.Field.ToEnum<PassportField>(), p => p.Value));
 
-        public int GetResult() => passports.Count(p => p.IsValid());
+        public string GetResult() => @$"Checking fields only: {passports.Count(p => p.ContainsRequiredFields())}
+Doing some validation: {passports.Count(p => p.IsValid())}";
 
         public enum PassportField
         {
@@ -42,7 +44,22 @@ namespace Advent2020
         {
             public Passport(Dictionary<PassportField, string> dict) : base(dict) { }
 
-            public bool IsValid()
+            public bool IsValid() => ContainsRequiredFields()
+                && IsValidBirthYear
+                && IsValidIssuanceYear
+                && IsValidExpirationYear
+                && IsValidHeight
+                && IsValidHair
+                && IsValidEye
+                && IsValidId;
+
+            public bool IsValidBirthYear => IsInRange(PassportField.BirthYear, 1920, 2002);
+
+            public bool IsValidIssuanceYear => IsInRange(PassportField.IssuanceYear, 2010, 2020);
+
+            public bool IsValidExpirationYear => IsInRange(PassportField.ExpirationYear, 2020, 2030);
+
+            public bool ContainsRequiredFields()
             {
                 var fields = Enum.GetValues(typeof(PassportField)).Cast<PassportField>();
                 var missingFields = fields
@@ -52,6 +69,55 @@ namespace Advent2020
 
                 return !missingFields.Any();
             }
+
+            private bool IsInRange(string value, int min, int max)
+            {
+                if (int.TryParse(value, out var number))
+                {
+                    return number >= min && number <= max;
+                }
+                return false;
+            }
+
+            private bool IsInRange(PassportField field, int min, int max) =>
+                IsInRange(this[field], min, max);
+
+            public bool IsValidHeight
+            {
+                get
+                {
+                    try
+                    {
+                        var height = this[PassportField.Height];
+                        var unit = height.Substring(height.Length - 2, 2);
+                        var value = height[0..^2];
+                        return unit switch
+                        {
+                            "cm" => IsInRange(value, 150, 193),
+                            "in" => IsInRange(value, 59, 76),
+                            _ => false
+                        };
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            public bool IsValidHair => Regex.IsMatch(this[PassportField.HairColor], @"^\#[abcdef0-9]{6}$");
+
+            public bool IsValidEye
+            {
+                get
+                {
+
+                    var colors = new string[] { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" };
+                    return colors.Contains(this[PassportField.EyeColor]);
+                }
+            }
+
+            public bool IsValidId => Regex.IsMatch(this[PassportField.PassportId], @"^\d{9}$");
         }
     }
 }
