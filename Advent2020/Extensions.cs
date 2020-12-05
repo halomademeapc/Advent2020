@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Advent2020
@@ -14,25 +16,16 @@ namespace Advent2020
 
         public static long Product(this IEnumerable<int> ints) => ints.Aggregate<int, long>(1, (total, next) => total * next);
 
-        public static TEnum ToEnum<TEnum>(this string @string) where TEnum : Enum
+        public static void Set<TModel, TProperty>(this TModel model, Expression<Func<TModel, TProperty>> expression, TProperty value)
         {
-            var mappings = GetMappings<TEnum>();
-            if (mappings.ContainsKey(@string))
-                return mappings[@string];
-            return default;
+            ((expression.Body as MemberExpression).Member as PropertyInfo).SetValue(model, value);
         }
 
-        public static Dictionary<string, TEnum> GetMappings<TEnum>() where TEnum : Enum
+        public static bool IsValid<TModel>(this TModel model)
         {
-            var result = new Dictionary<string, TEnum>();
-            var enumType = typeof(TEnum);
-            var enumValues = Enum.GetValues(enumType).Cast<TEnum>();
-            foreach (var member in enumType.GetMembers().Where(m => enumValues.Select(e => e.ToString()).Contains(m.Name)))
-            {
-                var valueAttribute = member.GetCustomAttribute<EnumValueAttribute>();
-                result[valueAttribute == default ? member.Name : valueAttribute.Value] = enumValues.First(e => e.ToString() == member.Name);
-            }
-            return result;
+            var context = new ValidationContext(model);
+            var results = new List<ValidationResult>();
+            return Validator.TryValidateObject(model, context, results, true);
         }
     }
 }

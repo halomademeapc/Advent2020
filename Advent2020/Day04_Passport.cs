@@ -1,123 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Linq.Expressions;
 
 namespace Advent2020
 {
-    public class Day04_Passport : IPuzzleResult<string>
+    public class Day04_Passport : IPuzzleResult<int>
     {
         private readonly IEnumerable<Passport> passports;
 
         public Day04_Passport()
         {
-            passports = Resources.Day4Values.Split("\r\n\r\n").Select(Parse); // passports separated by blank line
+            passports = Resources.Day4Values.Split("\r\n\r\n").Select(Passport.Parse); // passports separated by blank line
         }
 
-        private static Passport Parse(string passportString) => new Passport(passportString
-                .Replace(Environment.NewLine, " ") // treat line breaks and spaces the same
-                .Split(" ", StringSplitOptions.RemoveEmptyEntries) // split into key value pairs
-                .Select(s =>
-                {
-                    var segments = s.Split(':');
-                    return (Field: segments.First(), Value: segments.Last());
-                }) // parse out key:value format
-                .ToDictionary(p => p.Field.ToEnum<PassportField>(), p => p.Value));
+        public int GetResult() => passports.Count(p => p.IsValid());
 
-        public string GetResult() => @$"Checking fields only: {passports.Count(p => p.ContainsRequiredFields())}
-Doing some validation: {passports.Count(p => p.IsValid())}";
-
-        public enum PassportField
+        public class Passport
         {
-            Unknown,
-            [EnumValue("byr")] BirthYear,
-            [EnumValue("iyr")] IssuanceYear,
-            [EnumValue("eyr")] ExpirationYear,
-            [EnumValue("hgt")] Height,
-            [EnumValue("hcl")] HairColor,
-            [EnumValue("ecl")] EyeColor,
-            [EnumValue("pid")] PassportId,
-            [EnumValue("cid")] CountryId
-        }
+            [Required, Range(1920, 2002)]
+            public int? BirthYear { get; set; }
 
-        public class Passport : Dictionary<PassportField, string>
-        {
-            public Passport(Dictionary<PassportField, string> dict) : base(dict) { }
+            [Required, Range(2010, 2020)]
+            public int? IssuanceYear { get; set; }
 
-            public bool IsValid() => ContainsRequiredFields()
-                && IsValidBirthYear
-                && IsValidIssuanceYear
-                && IsValidExpirationYear
-                && IsValidHeight
-                && IsValidHair
-                && IsValidEye
-                && IsValidId;
+            [Required, Range(2020, 2030)]
+            public int? ExpirationYear { get; set; }
 
-            public bool IsValidBirthYear => IsInRange(PassportField.BirthYear, 1920, 2002);
+            [Required, RegularExpression(@"^\d+(in|cm)$")]
+            public string Height { get; set; }
 
-            public bool IsValidIssuanceYear => IsInRange(PassportField.IssuanceYear, 2010, 2020);
+            [Range(150, 193)]
+            public int? HeightInCentimeters => ParseHeight("cm");
 
-            public bool IsValidExpirationYear => IsInRange(PassportField.ExpirationYear, 2020, 2030);
+            [Range(59, 76)]
+            public int? HeightInInches => ParseHeight("in");
 
-            public bool ContainsRequiredFields()
+            private int? ParseHeight(string unit) => !string.IsNullOrEmpty(Height) && Height.EndsWith(unit) && int.TryParse(Height.Substring(0, Height.Length - unit.Length), out var h)
+                ? (int?)h
+                : null;
+
+            [Required, RegularExpression(@"^\#[abcdef0-9]{6}$")]
+            public string HairColor { get; set; }
+
+            [Required, RegularExpression(@"^(amb|blu|brn|gry|grn|hzl|oth)$")]
+            public string EyeColor { get; set; }
+
+            [Required, RegularExpression(@"^\d{9}$")]
+            public string PassportId { get; set; }
+
+            public string CountryId { get; set; }
+
+            public static Passport Parse(string raw)
             {
-                var fields = Enum.GetValues(typeof(PassportField)).Cast<PassportField>();
-                var missingFields = fields
-                    .Where(f => !ContainsKey(f))
-                    .Where(f => f != PassportField.Unknown) // ignore unknown
-                    .Where(f => f != PassportField.CountryId); // don't care if this is this only missing one
-
-                return !missingFields.Any();
-            }
-
-            private bool IsInRange(string value, int min, int max)
-            {
-                if (int.TryParse(value, out var number))
-                {
-                    return number >= min && number <= max;
-                }
-                return false;
-            }
-
-            private bool IsInRange(PassportField field, int min, int max) =>
-                IsInRange(this[field], min, max);
-
-            public bool IsValidHeight
-            {
-                get
-                {
-                    try
+                var passport = new Passport();
+                var values = raw.Replace(Environment.NewLine, " ") // treat line breaks and spaces the same
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries) // split into key value pairs
+                    .Select(s =>
                     {
-                        var height = this[PassportField.Height];
-                        var unit = height.Substring(height.Length - 2, 2);
-                        var value = height[0..^2];
-                        return unit switch
-                        {
-                            "cm" => IsInRange(value, 150, 193),
-                            "in" => IsInRange(value, 59, 76),
-                            _ => false
-                        };
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
-            }
+                        var segments = s.Split(':');
+                        return (Field: segments.First(), Value: segments.Last());
+                    }) // parse out key:value format
+                    .ToDictionary(p => p.Field, p => p.Value);
 
-            public bool IsValidHair => Regex.IsMatch(this[PassportField.HairColor], @"^\#[abcdef0-9]{6}$");
+                SetInt("byr", p => p.BirthYear);
+                SetInt("iyr", p => p.IssuanceYear);
+                SetInt("eyr", p => p.ExpirationYear);
+                SetString("hgt", p => p.Height);
+                SetString("hcl", p => p.HairColor);
+                SetString("ecl", p => p.EyeColor);
+                SetString("pid", p => p.PassportId);
+                SetString("cid", p => p.CountryId);
 
-            public bool IsValidEye
-            {
-                get
+                return passport;
+
+                void SetInt(string key, Expression<Func<Passport, int?>> property)
                 {
+                    if (values.ContainsKey(key) && int.TryParse(values[key], out var parsed))
+                        passport.Set(property, parsed);
+                }
 
-                    var colors = new string[] { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" };
-                    return colors.Contains(this[PassportField.EyeColor]);
+                void SetString(string key, Expression<Func<Passport, string>> property)
+                {
+                    if (values.ContainsKey(key))
+                        passport.Set(property, values[key]);
                 }
             }
-
-            public bool IsValidId => Regex.IsMatch(this[PassportField.PassportId], @"^\d{9}$");
         }
     }
 }
