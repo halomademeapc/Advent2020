@@ -12,7 +12,7 @@ namespace Advent2020
 
         public Day04_Passport()
         {
-            passports = Resources.Day4Values.Split("\r\n\r\n").Select(Passport.Parse); // passports separated by blank line
+            passports = Resources.Day4Values.Split($"{Environment.NewLine}{Environment.NewLine}").Select(Passport.Parse); // passports separated by blank line
         }
 
         public int GetResult() => passports.Count(p => p.IsValid());
