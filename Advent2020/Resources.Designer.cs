@@ -61,6 +61,128 @@ namespace Advent2020 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to W5
+        ///N3
+        ///W4
+        ///F2
+        ///N3
+        ///R180
+        ///E2
+        ///S4
+        ///E5
+        ///N4
+        ///E2
+        ///L90
+        ///F81
+        ///E5
+        ///R180
+        ///E2
+        ///F88
+        ///L90
+        ///N4
+        ///E1
+        ///F90
+        ///S3
+        ///W3
+        ///R90
+        ///F80
+        ///E4
+        ///F28
+        ///R180
+        ///S1
+        ///F80
+        ///E4
+        ///F18
+        ///S5
+        ///W4
+        ///F13
+        ///R90
+        ///S3
+        ///W5
+        ///N2
+        ///F76
+        ///L90
+        ///N4
+        ///F49
+        ///L180
+        ///E5
+        ///R90
+        ///F51
+        ///E4
+        ///L180
+        ///F86
+        ///S5
+        ///L180
+        ///F3
+        ///E5
+        ///W1
+        ///R90
+        ///F54
+        ///N4
+        ///E5
+        ///R90
+        ///E4
+        ///N3
+        ///W1
+        ///E4
+        ///R180
+        ///W2
+        ///F2
+        ///S5
+        ///W4
+        ///E3
+        ///R90
+        ///F49
+        ///R90
+        ///W5
+        ///N3
+        ///F47
+        ///E1
+        ///L90
+        ///E2
+        ///F86
+        ///E3
+        ///R90
+        ///F100
+        ///F84
+        ///N2
+        ///F12
+        ///L90
+        ///N4
+        ///W5
+        ///F40
+        ///N5
+        ///F68
+        ///W3
+        ///R90
+        ///W4
+        ///N1
+        ///F63
+        ///W5
+        ///S3
+        ///F52
+        ///R180
+        ///W1
+        ///W4
+        ///L90
+        ///N4
+        ///R90
+        ///S4
+        ///L90
+        ///F77
+        ///R90
+        ///E5
+        ///F20
+        ///N3
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Day12Values {
+            get {
+                return ResourceManager.GetString("Day12Values", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 1695
         ///1157
         ///1484
