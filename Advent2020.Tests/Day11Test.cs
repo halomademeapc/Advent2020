@@ -47,5 +47,53 @@ L.L.L..L..
 #.LLLLLL.L
 #.#LLLL.##", Day11_SeatQueue.Stringify(result));
         }
+
+        [Fact]
+        public void Visibility_First_Iteration()
+        {
+            var result = Day11_SeatVisibility.Simulate(Example, 1);
+            Assert.Equal(@"#.##.##.##
+#######.##
+#.#.#..#..
+####.##.##
+#.##.##.##
+#.#####.##
+..#.#.....
+##########
+#.######.#
+#.#####.##", Day11_SeatQueue.Stringify(result));
+        }
+
+        [Fact]
+        public void Visibility_Second_Iteration()
+        {
+            var result = Day11_SeatVisibility.Simulate(Example, 2);
+            Assert.Equal(@"#.LL.LL.L#
+#LLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLLL.L
+#.LLLLL.L#", Day11_SeatQueue.Stringify(result));
+        }
+
+        [Fact]
+        public void Visibility_Third_Iteration()
+        {
+            var result = Day11_SeatVisibility.Simulate(Example, 3);
+            Assert.Equal(@"#.L#.##.L#
+#L#####.LL
+L.#.#..#..
+##L#.##.##
+#.##.#L.##
+#.#####.#L
+..#.#.....
+LLL####LL#
+#.L#####.L
+#.L####.L#", Day11_SeatQueue.Stringify(result));
+        }
     }
 }

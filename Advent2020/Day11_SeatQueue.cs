@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Advent2020
 {
     public class Day11_SeatQueue : IPuzzleResult<int>
     {
-        private PositionContent[][] Positions;
+        protected PositionContent[][] Positions;
 
         public Day11_SeatQueue()
         {
@@ -60,7 +61,7 @@ namespace Advent2020
             bool HasChange() => previousPositions.SelectMany(p => p).Zip(newPositions.SelectMany(p => p)).Any(p => p.First != p.Second);
         }
 
-        public int GetResult() => Simulate(Positions).SelectMany(r => r).Count(s => s == PositionContent.OccupiedSeat);
+        public virtual int GetResult() => Simulate(Positions).SelectMany(r => r).Count(s => s == PositionContent.OccupiedSeat);
 
         public enum PositionContent
         {
