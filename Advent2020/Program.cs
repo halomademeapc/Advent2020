@@ -15,7 +15,7 @@ namespace Advent2020
                 .Where(t => !t.IsAbstract)
                 .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPuzzleResult<>)));
 
-            foreach (var t in types)
+            foreach (var t in types.OrderBy(t => t.Name))
             {
                 var sw = new Stopwatch();
                 try
