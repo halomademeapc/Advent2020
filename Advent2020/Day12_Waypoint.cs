@@ -13,29 +13,29 @@ namespace Advent2020
 
             foreach (var instruction in instructions)
             {
-                var command = instruction[0..1];
+                var command = instruction[0];
                 var param = int.Parse(instruction[1..]);
                 switch (command)
                 {
-                    case "N": // move waypoint
+                    case 'N': // move waypoint
                         waypoint += new Vector2(0, param);
                         break;
-                    case "S":
+                    case 'S':
                         waypoint -= new Vector2(0, param);
                         break;
-                    case "E":
+                    case 'E':
                         waypoint += new Vector2(param, 0);
                         break;
-                    case "W":
+                    case 'W':
                         waypoint -= new Vector2(param, 0);
                         break;
-                    case "L": // rotate waypoint about ship n degrees
+                    case 'L': // rotate waypoint about ship n degrees
                         waypoint = waypoint.RotateLeft(param);
                         break;
-                    case "R":
+                    case 'R':
                         waypoint = waypoint.RotateRight(param);
                         break;
-                    case "F": // move to waypoint n times
+                    case 'F': // move to waypoint n times
                         ship += waypoint * param;
                         break;
                     default:
